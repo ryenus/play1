@@ -180,7 +180,7 @@ public abstract class Binder {
             }
 
             Object directBindResult = internalDirectBind(paramNode.getOriginalKey(), bindingAnnotations.annotations, paramNode.getFirstValue(clazz), clazz, type);
-            
+
             if (directBindResult != DIRECTBINDING_NO_RESULT) {
                 // we found a value/result when direct binding
                 return directBindResult;
@@ -190,10 +190,10 @@ public abstract class Binder {
             if (clazz.isArray()) {
                 return bindArray(clazz, paramNode, bindingAnnotations);
             }
-			
-			if (!paramNode.getAllChildren().isEmpty()) {
-	        	return internalBindBean(clazz, paramNode, bindingAnnotations);
-	        }
+
+            if (!paramNode.getAllChildren().isEmpty()) {
+                return internalBindBean(clazz, paramNode, bindingAnnotations);
+            }
 
             return null; // give up
         } catch (BinderException e) {
@@ -311,6 +311,15 @@ public abstract class Binder {
                 // first we try with annotations resolved from property
                 annotations = prop.getAnnotations();
                 BindingAnnotations propBindingAnnotations = new BindingAnnotations(annotations, bindingAnnotations.getProfiles());
+
+                String[] values = propParamNode.getValues();
+                if (values != null) {
+                    for (int i = 0; i < values.length; i++) {
+                        String value = values[i];
+                        values[i] = prop.strip(bean, value);
+                    }
+                }
+
                 Object value = internalBind(propParamNode, prop.getType(), prop.getGenericType(), propBindingAnnotations);
                 if (value != MISSING) {
                     if (value != NO_BINDING) {
@@ -406,9 +415,9 @@ public abstract class Binder {
                     if (annotation.annotationType().equals(As.class)) {
                         As as = ((As) annotation);
                         final String separator = as.value()[0];
-			if (separator != null && !separator.isEmpty()){
-                        	values = values[0].split(separator);
-			}
+                        if (separator != null && StringUtils.isNotEmpty(separator)){
+                            values = values[0].split(separator);
+                        }
                     }
                 }
             }
@@ -433,6 +442,7 @@ public abstract class Binder {
 
             // must get all indexes and sort them so we add items in correct order.
             Set<String> indexes = new TreeSet<String>(new Comparator<String>() {
+                @Override
                 public int compare(String arg0, String arg1) {
                     try {
                         return Integer.parseInt(arg0) - Integer.parseInt(arg1);
