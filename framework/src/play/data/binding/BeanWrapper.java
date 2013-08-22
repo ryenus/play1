@@ -202,21 +202,18 @@ public class BeanWrapper {
                 stripping = instance.getClass().getAnnotation(AttributeStripping.class);
             }
 
-            if (stripping != null && value instanceof String) {
-                String mod = (String) value;
+            if (stripping != null) {
                 if (stripping.strip() || stripping.squish()) {
-                    mod = StringUtils.strip(mod);
+                    result = StringUtils.strip(result);
                 }
 
                 if (stripping.squish()) {
-                    mod = mod.replaceAll("\\s+", " ");
+                    result = result.replaceAll("\\s+", " ");
                 }
 
                 if (stripping.nullify()) {
-                    mod = StringUtils.stripToNull(mod);
+                    result = StringUtils.stripToNull(result);
                 }
-
-                result = mod;
 
                 if (Logger.isTraceEnabled()) {
                     Logger.trace("Value of attribute '%s' stripped from '%s' to '%s'", name, value, result);
