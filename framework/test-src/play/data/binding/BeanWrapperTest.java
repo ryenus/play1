@@ -107,7 +107,7 @@ public class BeanWrapperTest {
         m.put("b.squish", new String[]{"  a_ b   c "});
         m.put("b.num", new String[]{"  123 "});
 
-        new BeanWrapper(StrippingBean.class).bind("b", null, m, "", b, null);
+        BeanWrapper.forClass(StrippingBean.class).bind("b", null, m, "", b, null);
         assertThat(b.value).isEqualTo("a  bc");
         assertThat(b.getToNull()).isEqualTo(null);
         assertThat(b.intact).isEqualTo("   ");
