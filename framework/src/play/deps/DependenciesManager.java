@@ -1,16 +1,14 @@
 package play.deps;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.FileFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.ivy.Ivy;
-import org.apache.ivy.core.cache.DefaultRepositoryCacheManager;
-import org.apache.ivy.core.cache.RepositoryCacheManager;
 import org.apache.ivy.core.report.ArtifactDownloadReport;
 import org.apache.ivy.core.report.ResolveReport;
 import org.apache.ivy.core.resolve.IvyNode;
@@ -278,7 +276,11 @@ public class DependenciesManager {
     }
 
     private boolean isPlayModule(ArtifactDownloadReport artifact) throws Exception {
-        boolean isPlayModule = artifact.getLocalFile().getName().endsWith(".zip");
+        String name = artifact.getLocalFile().getName();
+        if (name.endsWith(".jar")) {
+            return false;
+        }
+        boolean isPlayModule = name.endsWith(".zip");
         if (!isPlayModule) {
             // Check again from origin location
             if (!artifact.getArtifactOrigin().isLocal() && artifact.getArtifactOrigin().getLocation().endsWith(".zip")) {
